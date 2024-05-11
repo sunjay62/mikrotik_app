@@ -13,13 +13,11 @@ import {
 import avatar from "assets/img/avatars/avatar4.png";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 
 const Navbar = (props) => {
   const { onOpenSidenav, brandText } = props;
   const [darkmode, setDarkmode] = useState(false);
   const [username, setUsername] = useState("");
-  const navigate = useNavigate();
 
   useEffect(() => {
     const accessToken = localStorage.getItem("access_token");
@@ -34,11 +32,9 @@ const Navbar = (props) => {
     }
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
-    navigate("/login");
-    console.log("logout clicked");
   };
 
   return (
