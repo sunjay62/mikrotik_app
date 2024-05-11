@@ -119,7 +119,7 @@ const TableStatistic = () => {
         end_datetime: endData,
       };
 
-      // console.log(formData);
+      console.log(formData);
 
       const responseData = await toast.promise(
         axios.post(`${BASE_URL}/clientppp/statistic`, formData, config),
@@ -145,7 +145,7 @@ const TableStatistic = () => {
       }));
 
       setDataTraffic(formattedData);
-      // console.log(formattedData);
+      console.log(formattedData);
       setDataPacket(formattedDataPacket);
     } catch (error) {
       console.log(error);
