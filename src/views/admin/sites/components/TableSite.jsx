@@ -151,7 +151,7 @@ export function TableSite() {
   // };
 
   const handleViewSite = (siteId) => {
-    console.log(siteId);
+    // console.log(siteId);
     navigate(`/admin/sites/view-detail/${siteId}`);
   };
 

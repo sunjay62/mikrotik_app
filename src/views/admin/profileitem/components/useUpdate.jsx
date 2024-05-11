@@ -51,7 +51,7 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
           config
         );
 
-        console.log(responseData);
+        // console.log(responseData);
 
         setName(responseData.data.name);
         setPassword(responseData.data.password);
@@ -91,7 +91,7 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
         status: status,
       };
 
-      console.log(formData);
+      // console.log(formData);
 
       const response = await toast.promise(
         axios.put(`${BASE_URL}/clientpppp`, formData, config),

@@ -107,11 +107,11 @@ export function TablePpp() {
             }
           );
 
-          console.log(response);
+          // console.log(response);
 
           if (response.status === 200) {
             refetch();
-            console.log(response);
+            // console.log(response);
           }
         } catch (error) {
           console.log(error);

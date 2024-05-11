@@ -63,9 +63,6 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedUsername }) => {
       open={openEdit}
       onCancel={handleOpenEdit}
       footer={[
-        <Button key="cancel" onClick={handleOpenEdit}>
-          Cancel
-        </Button>,
         <Button
           key="confirm"
           className="bg-blue-500 text-white"

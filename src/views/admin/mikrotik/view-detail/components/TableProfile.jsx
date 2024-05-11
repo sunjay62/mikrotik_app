@@ -115,7 +115,7 @@ export function TableProfile() {
             user.ipaddress.toLowerCase().includes(value.toLowerCase()))
       );
       setFilteredUsers(filtered);
-      console.log(filtered);
+      // console.log(filtered);
       setLength(filtered.length);
     }
     setCurrentPage(1);

@@ -24,7 +24,7 @@ const Navbar = (props) => {
     if (accessToken) {
       try {
         const decodedToken = jwtDecode(accessToken);
-        console.log(decodedToken);
+        // console.log(decodedToken);
         setUsername(decodedToken.username);
       } catch (error) {
         toast.error("Your session is expired, please login again.");

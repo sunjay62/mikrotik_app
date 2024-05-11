@@ -36,6 +36,8 @@ const TableStatistic = () => {
   const [comment, setComment] = useState("");
   const [name, setName] = useState("");
   const [uptime, setUptime] = useState("");
+  const [totalByte, setTotalByte] = useState("");
+  const [totalPacket, setTotalPacket] = useState("");
   const navigate = useNavigate();
   const [dataTraffic, setDataTraffic] = useState([]);
   const [dataPacket, setDataPacket] = useState([]);
@@ -117,6 +119,8 @@ const TableStatistic = () => {
         end_datetime: endData,
       };
 
+      // console.log(formData);
+
       const responseData = await toast.promise(
         axios.post(`${BASE_URL}/clientppp/statistic`, formData, config),
         {
@@ -125,7 +129,8 @@ const TableStatistic = () => {
         }
       );
 
-      console.log(responseData);
+      setTotalByte(responseData.data.total_byte);
+      setTotalPacket(responseData.data.total_packet);
 
       const formattedData = responseData.data.data.map((item) => ({
         x: item.timestamp,
@@ -140,6 +145,7 @@ const TableStatistic = () => {
       }));
 
       setDataTraffic(formattedData);
+      // console.log(formattedData);
       setDataPacket(formattedDataPacket);
     } catch (error) {
       console.log(error);
@@ -433,9 +439,12 @@ const TableStatistic = () => {
                 options={areaLineOptions}
                 series={areaLineOptions.series}
                 type="area"
+                height={500}
               />
             </div>
+            <h2>Total Usage : {formatBytes(totalByte)}</h2>
           </div>
+          <hr className="mb-5 mt-5" />
           <div className="mt-10">
             <h2>Packet Chart</h2>
             <div id="chart">
@@ -443,8 +452,10 @@ const TableStatistic = () => {
                 options={areaLineOptionsPacket}
                 series={areaLineOptionsPacket.series}
                 type="area"
+                height={500}
               />
             </div>
+            <h2>Total Packet : {totalPacket}</h2>
           </div>
         </CardBody>
       </Card>

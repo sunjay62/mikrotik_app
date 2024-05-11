@@ -66,7 +66,7 @@ const SiteProfileDetail = () => {
           config
         );
 
-        console.log(responseData);
+        // console.log(responseData);
 
         setData(responseData.data.data);
         setDataLoaded(true);

@@ -100,7 +100,7 @@ export function TableSite() {
     }
   }, [data]);
 
-  console.log(data);
+  // console.log(data);
 
   useEffect(() => {
     if (!dataLoaded) return;

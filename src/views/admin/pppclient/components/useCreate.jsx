@@ -31,6 +31,7 @@ const useCreate = ({ handleOpen, open }) => {
     setStatus("");
     setComment("");
     setMikrotikId("");
+    setConfiguration("");
   };
 
   const handleCreate = async () => {
@@ -54,7 +55,7 @@ const useCreate = ({ handleOpen, open }) => {
         configuration: configuration,
       };
 
-      console.log(formData);
+      // console.log(formData);
 
       const response = await toast.promise(
         axios.post(`${BASE_URL}/clientppp`, formData, config),

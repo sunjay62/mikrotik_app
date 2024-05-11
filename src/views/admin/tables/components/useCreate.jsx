@@ -59,7 +59,7 @@ const useCreate = ({ handleOpen, open }) => {
         status: status,
       };
 
-      console.log(formData);
+      // console.log(formData);
 
       const response = await toast.promise(
         axios.post(`${BASE_URL}/clientppp`, formData, config),

@@ -47,7 +47,7 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
           config
         );
 
-        console.log(responseData.data);
+        // console.log(responseData.data);
 
         setName(responseData.data.name);
         setPassword(responseData.data.password);
@@ -87,7 +87,7 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
         configuration: configuration,
       };
 
-      console.log(formData);
+      // console.log(formData);
 
       const response = await toast.promise(
         axios.put(`${BASE_URL}/clientppp`, formData, config),
@@ -118,7 +118,7 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
 
         const responseData = await axios.get(`${BASE_URL}/mikrotik`, config);
 
-        console.log(responseData);
+        // console.log(responseData);
 
         if (responseData && responseData.data) {
           setMikrotikOptions(
@@ -214,9 +214,6 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
       onCancel={handleOpenEdit}
       className="-mt-16"
       footer={[
-        <Button key="cancel" onClick={handleOpenEdit}>
-          Cancel
-        </Button>,
         <Button
           key="confirm"
           className="bg-blue-500 text-white"

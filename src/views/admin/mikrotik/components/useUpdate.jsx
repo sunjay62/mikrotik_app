@@ -1,19 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-  Input,
-  Typography,
-  Option,
-  Select,
-} from "@material-tailwind/react";
-import { toast } from "react-toastify";
+import { Button, Input, Typography, Select, Modal, message } from "antd";
+import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { BASE_URL } from "libs/auth-api";
-import { EyeSlashIcon, EyeIcon } from "@heroicons/react/24/outline";
 import { useData } from "./useData";
 
 const useUpdate = ({ handleOpenEdit, openEdit, selectedMikrotikId }) => {
@@ -27,8 +16,9 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedMikrotikId }) => {
   const [siteLabel, setSiteLabel] = useState("");
   const [siteLabelId, setSiteLabelId] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [ipAddressError, setIpAddressError] = useState(""); // New state for IP Address validation error
+  const [ipAddressError, setIpAddressError] = useState("");
   const { refetch } = useData();
+  const { Option } = Select;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,20 +68,19 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedMikrotikId }) => {
         apiport: apiPort,
       };
 
-      const response = await toast.promise(
-        axios.put(`${BASE_URL}/mikrotik`, formData, config),
-        {
-          pending: "Updating ...",
-          success: "Updated Successfully!",
-        }
+      const response = await axios.put(
+        `${BASE_URL}/mikrotik`,
+        formData,
+        config
       );
 
       if (response.status === 200) {
         handleOpenEdit();
         refetch();
+        message.success("Updated Successfully!");
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      message.error(error.response.data.message);
     }
   };
 
@@ -145,8 +134,7 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedMikrotikId }) => {
   };
 
   // Handle IP Address change
-  const handleIpAddressChange = (e) => {
-    const value = e.target.value;
+  const handleIpAddressChange = (value) => {
     setIpAddress(value);
     setIpAddressError(validateIpAddress(value));
   };
@@ -166,145 +154,90 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedMikrotikId }) => {
   };
 
   return (
-    <Dialog
+    <Modal
+      title="Edit MikroTik"
       open={openEdit}
-      size={"xs"}
-      handler={handleOpenEdit}
-      className="dark:bg-navy-700 dark:text-white"
+      onCancel={handleOpenEdit}
+      className="-mt-16"
+      footer={[
+        <Button
+          key="confirm"
+          className="bg-blue-500 text-white"
+          onClick={handleUpdate}
+        >
+          Update
+        </Button>,
+      ]}
     >
-      <DialogHeader>Edit Device</DialogHeader>
-      <DialogBody>
-        <Typography variant="paragraph" color="blue-gray">
-          Device Name
-        </Typography>
+      <div>
+        <Typography.Text>Device Name</Typography.Text>
         <Input
-          size="md"
-          color="blue"
+          size="middle"
           placeholder="Device Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="dark:bg-navy-700"
         />
-        <Typography
-          variant="paragraph"
-          color="blue-gray"
-          className="mb-1 mt-3 text-sm"
-        >
-          IP Address
-        </Typography>
+      </div>
+      <div>
+        <Typography.Text>IP Address</Typography.Text>
         <Input
-          size="md"
-          className="dark:bg-navy-700"
-          color="blue"
+          size="middle"
           placeholder="IP Address"
           value={ipAddress}
-          onChange={handleIpAddressChange}
-          error={!!ipAddressError} // Convert ipAddressError to boolean
+          onChange={(e) => handleIpAddressChange(e.target.value)}
+          error={!!ipAddressError}
         />
         {ipAddressError && (
-          <Typography variant="paragraph" color="red">
-            {ipAddressError}
-          </Typography>
+          <Typography.Text type="danger">{ipAddressError}</Typography.Text>
         )}
-        <Typography
-          variant="paragraph"
-          color="blue-gray"
-          className="mb-1 mt-3 text-sm"
-        >
-          Username
-        </Typography>
+      </div>
+      <div>
+        <Typography.Text>Username</Typography.Text>
         <Input
-          size="md"
-          className="dark:bg-navy-700"
-          color="blue"
+          size="middle"
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
-        <Typography
-          variant="paragraph"
-          color="blue-gray"
-          className="mb-1 mt-3 text-sm"
-        >
-          Password
-        </Typography>
-        <div className="relative">
-          <Input
-            type={showPassword ? "text" : "password"}
-            size="md"
-            className="dark:bg-navy-700"
-            color="blue"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button
-            type="button"
-            className="absolute inset-y-0 right-0 flex items-center pr-3"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? (
-              <EyeIcon className="h-5 w-5 text-gray-500" />
-            ) : (
-              <EyeSlashIcon className="h-5 w-5 text-gray-500" />
-            )}
-          </button>
-        </div>
-        <Typography
-          variant="paragraph"
-          color="blue-gray"
-          className="mb-1 mt-3 text-sm"
-        >
-          Site ID
-        </Typography>
+      </div>
+      <div>
+        <Typography.Text>Password</Typography.Text>
+        <Input.Password
+          size="middle"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          iconRender={(visible) =>
+            visible ? <EyeOutlined /> : <EyeInvisibleOutlined />
+          }
+        />
+      </div>
+      <div>
+        <Typography.Text>Site ID</Typography.Text>
         <Select
-          size="md"
-          className="dark:bg-navy-700"
-          color="blue"
+          size="middle"
+          className="w-full "
           value={siteLabel}
           onChange={handleChangeSite}
         >
           {siteOptions.map((option) => (
-            <Option
-              key={option.value}
-              value={option.label}
-              className="hover:bg-gray-100"
-            >
+            <Option key={option.value} value={option.label}>
               {option.label}
             </Option>
           ))}
         </Select>
-        <Typography
-          variant="paragraph"
-          color="blue-gray"
-          className="mb-1 mt-3 text-sm"
-        >
-          API Port
-        </Typography>
+      </div>
+      <div>
+        <Typography.Text>API Port</Typography.Text>
         <Input
           type="number"
-          size="md"
-          className="dark:bg-navy-700"
-          color="blue"
+          size="middle"
           placeholder="API Port"
           value={apiPort}
           onChange={(e) => setApiPort(e.target.value)}
         />
-      </DialogBody>
-      <DialogFooter>
-        <Button
-          variant="text"
-          color="red"
-          onClick={handleOpenEdit}
-          className="mr-1"
-        >
-          <span>Cancel</span>
-        </Button>
-        <Button variant="gradient" color="green" onClick={handleUpdate}>
-          <span>Confirm</span>
-        </Button>
-      </DialogFooter>
-    </Dialog>
+      </div>
+    </Modal>
   );
 };
 

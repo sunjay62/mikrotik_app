@@ -41,7 +41,7 @@ const useCreate = ({ handleOpen, open }) => {
         }
       );
 
-      console.log(response);
+      // console.log(response);
 
       if (response.status === 201) {
         resetForm();
