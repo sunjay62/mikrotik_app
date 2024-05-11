@@ -13,6 +13,7 @@ import {
 import avatar from "assets/img/avatars/avatar4.png";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
+import { UserIcon } from "@heroicons/react/24/solid";
 
 const Navbar = (props) => {
   const { onOpenSidenav, brandText } = props;
@@ -86,7 +87,7 @@ const Navbar = (props) => {
           <FiAlignJustify className="h-5 w-5" />
         </span>
         {/* start Notification */}
-        <Dropdown
+        {/* <Dropdown
           button={
             <p className="cursor-pointer">
               <IoMdNotificationsOutline className="h-5 w-5 text-gray-600 dark:text-white" />
@@ -134,9 +135,9 @@ const Navbar = (props) => {
             </div>
           }
           classNames={"py-2 top-4 -left-[230px] md:-left-[440px] w-max"}
-        />
+        /> */}
         {/* start Horizon PRO */}
-        <Dropdown
+        {/* <Dropdown
           button={
             <p className="cursor-pointer">
               <IoMdInformationCircleOutline className="h-5 w-5 text-gray-600 dark:text-white" />
@@ -177,7 +178,7 @@ const Navbar = (props) => {
           }
           classNames={"py-2 top-6 -left-[250px] md:-left-[330px] w-max"}
           animation="origin-[75%_0%] md:origin-top-right transition-all duration-300 ease-in-out"
-        />
+        /> */}
         <div
           className="cursor-pointer text-gray-600"
           onClick={() => {
@@ -199,11 +200,7 @@ const Navbar = (props) => {
         {/* Profile & Dropdown */}
         <Dropdown
           button={
-            <img
-              className="h-10 w-10 cursor-pointer rounded-full"
-              src={avatar}
-              alt="Elon Musk"
-            />
+            <UserIcon className="h-10 w-10 cursor-pointer rounded-full border border-gray-600 p-2 dark:border-white" />
           }
           children={
             <div className="flex w-56 flex-col justify-start rounded-[20px] bg-white bg-cover bg-no-repeat shadow-xl shadow-shadow-500 dark:!bg-navy-700 dark:text-white dark:shadow-none">
@@ -218,16 +215,10 @@ const Navbar = (props) => {
 
               <div className="flex flex-col p-4">
                 <a
-                  href=" "
+                  href="/admin/administrator"
                   className="text-sm text-gray-800 dark:text-white hover:dark:text-white"
                 >
                   Profile Settings
-                </a>
-                <a
-                  href=" "
-                  className="mt-3 text-sm text-gray-800 dark:text-white hover:dark:text-white"
-                >
-                  Newsletter Settings
                 </a>
                 <a
                   onClick={handleLogout}
