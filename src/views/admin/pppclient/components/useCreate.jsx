@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, Typography, Select, Modal } from "antd";
+import { Button, Input, Form, Typography, Select, Modal, Space } from "antd";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { BASE_URL } from "libs/auth-api";
@@ -7,6 +7,15 @@ import { useData } from "./useData";
 import { toast } from "react-toastify";
 
 const { Option } = Select;
+
+const layout = {
+  labelCol: {
+    span: 8,
+  },
+  wrapperCol: {
+    span: 16,
+  },
+};
 
 const useCreate = ({ handleOpen, open }) => {
   const [name, setName] = useState("");
@@ -22,8 +31,10 @@ const useCreate = ({ handleOpen, open }) => {
   const { refetch } = useData();
   const [mikrotikOptions, setMikrotikOptions] = useState([]);
   const [profileOptions, setProfileOptions] = useState([]);
+  const [form] = Form.useForm();
 
   const resetForm = () => {
+    form.resetFields();
     setName("");
     setPassword("");
     setProfile("");
@@ -54,8 +65,6 @@ const useCreate = ({ handleOpen, open }) => {
         status: status,
         configuration: configuration,
       };
-
-      // console.log(formData);
 
       const response = await toast.promise(
         axios.post(`${BASE_URL}/clientppp`, formData, config),
@@ -143,7 +152,6 @@ const useCreate = ({ handleOpen, open }) => {
     setSearchInput(value);
   };
 
-  // Render opsi yang difilter berdasarkan input pencarian
   const filteredMikrotikOptions = mikrotikOptions.filter((option) =>
     option.label.toLowerCase().includes(searchInput.toLowerCase())
   );
@@ -155,29 +163,46 @@ const useCreate = ({ handleOpen, open }) => {
         handleOpen();
         resetForm();
       }}
+      width={430}
+      footer={null}
       className="-mt-16"
       title="Create New Secret"
-      footer={[
-        <Button
-          key="submit"
-          className="bg-blue-500 text-white"
-          onClick={handleCreate}
-        >
-          Create
-        </Button>,
-      ]}
     >
-      <div>
-        <Typography variant="paragraph" color="blue-gray">
+      <Form
+        {...layout}
+        form={form}
+        name="control-hooks"
+        onFinish={handleCreate}
+        style={{
+          width: "100%",
+        }}
+      >
+        <Typography
+          variant="paragraph"
+          color="blue-gray"
+          className="mb-1 mt-1 text-sm"
+        >
           Name
         </Typography>
-        <Input
-          size="middle"
-          color="blue"
-          placeholder="Device Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <Form.Item
+          name="name"
+          rules={[
+            {
+              required: true,
+              message: "Please input the name!",
+            },
+          ]}
+          className="w-96"
+        >
+          <Input
+            size="middle"
+            color="blue"
+            className="w-96"
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </Form.Item>
         <Typography
           variant="paragraph"
           color="blue-gray"
@@ -185,10 +210,20 @@ const useCreate = ({ handleOpen, open }) => {
         >
           Password
         </Typography>
-        <div className="relative">
+        <Form.Item
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: "Please input the password!",
+            },
+          ]}
+          className="w-96"
+        >
           <Input.Password
             size="middle"
             color="blue"
+            className="w-96"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -196,7 +231,7 @@ const useCreate = ({ handleOpen, open }) => {
               visible ? <EyeOutlined /> : <EyeInvisibleOutlined />
             }
           />
-        </div>
+        </Form.Item>
         <Typography
           variant="paragraph"
           color="blue-gray"
@@ -204,23 +239,34 @@ const useCreate = ({ handleOpen, open }) => {
         >
           MikroTik
         </Typography>
-        <Select
-          size="middle"
-          className="w-full "
-          color="blue"
-          onChange={(value) => setMikrotikId(value)}
-          value={mikrotikId}
-          showSearch
-          placeholder="Search MikroTik"
-          optionFilterProp="children"
-          onSearch={handleSearchInputChange}
+        <Form.Item
+          name="mikrotik"
+          rules={[
+            {
+              required: true,
+              message: "Please select a MikroTik!",
+            },
+          ]}
+          className="w-96"
         >
-          {filteredMikrotikOptions.map((option) => (
-            <Option key={option.value} value={option.value}>
-              {option.label}
-            </Option>
-          ))}
-        </Select>
+          <Select
+            size="middle"
+            className="w-96"
+            color="blue"
+            onChange={(value) => setMikrotikId(value)}
+            value={mikrotikId}
+            showSearch
+            placeholder="Select MikroTik"
+            optionFilterProp="children"
+            onSearch={handleSearchInputChange}
+          >
+            {filteredMikrotikOptions.map((option) => (
+              <Option key={option.value} value={option.value}>
+                {option.label}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
         {mikrotikId && (
           <>
             <Typography
@@ -230,19 +276,31 @@ const useCreate = ({ handleOpen, open }) => {
             >
               Profile
             </Typography>
-            <Select
-              size="middle"
-              className="w-full "
-              color="blue"
-              onChange={(value) => setProfile(value)}
-              value={profile}
+            <Form.Item
+              name="profile"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select a profile!",
+                },
+              ]}
+              className="w-96"
             >
-              {profileOptions.map((option) => (
-                <Option key={option.value} value={option.value}>
-                  {option.label}
-                </Option>
-              ))}
-            </Select>
+              <Select
+                size="middle"
+                className="w-96"
+                color="blue"
+                placeholder="Select Profile"
+                onChange={(value) => setProfile(value)}
+                value={profile}
+              >
+                {profileOptions.map((option) => (
+                  <Option key={option.value} value={option.value}>
+                    {option.label}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
           </>
         )}
         <Typography
@@ -252,22 +310,33 @@ const useCreate = ({ handleOpen, open }) => {
         >
           Service Type
         </Typography>
-        <Select
-          size="middle"
-          className="w-full "
-          color="blue"
-          placeholder="Service Type"
-          onChange={(value) => setService(value)}
-          value={service}
+        <Form.Item
+          name="service"
+          rules={[
+            {
+              required: true,
+              message: "Please select a service type!",
+            },
+          ]}
+          className="w-96"
         >
-          <Option value="any">Any</Option>
-          <Option value="async">Async</Option>
-          <Option value="l2tp">L2TP</Option>
-          <Option value="ovpn">OVPN</Option>
-          <Option value="pppoe">PPPOE</Option>
-          <Option value="pptp">PPTP</Option>
-          <Option value="sstp">SSTP</Option>
-        </Select>
+          <Select
+            size="middle"
+            className="w-96"
+            color="blue"
+            placeholder="Select Service Type"
+            onChange={(value) => setService(value)}
+            value={service}
+          >
+            <Option value="any">Any</Option>
+            <Option value="async">Async</Option>
+            <Option value="l2tp">L2TP</Option>
+            <Option value="ovpn">OVPN</Option>
+            <Option value="pppoe">PPPOE</Option>
+            <Option value="pptp">PPTP</Option>
+            <Option value="sstp">SSTP</Option>
+          </Select>
+        </Form.Item>
         <Typography
           variant="paragraph"
           color="blue-gray"
@@ -275,17 +344,28 @@ const useCreate = ({ handleOpen, open }) => {
         >
           Status
         </Typography>
-        <Select
-          size="middle"
-          className="w-full "
-          color="blue"
-          placeholder="Service Type"
-          onChange={(value) => setStatus(value)}
-          value={status}
+        <Form.Item
+          name="status"
+          rules={[
+            {
+              required: true,
+              message: "Please select a status!",
+            },
+          ]}
+          className="w-96"
         >
-          <Option value="enable">Enable</Option>
-          <Option value="disable">Disable</Option>
-        </Select>
+          <Select
+            size="middle"
+            className="w-96"
+            color="blue"
+            placeholder="Select Status"
+            onChange={(value) => setStatus(value)}
+            value={status}
+          >
+            <Option value="enable">Enable</Option>
+            <Option value="disable">Disable</Option>
+          </Select>
+        </Form.Item>
         <Typography
           variant="paragraph"
           color="blue-gray"
@@ -293,22 +373,28 @@ const useCreate = ({ handleOpen, open }) => {
         >
           Configuration
         </Typography>
-        <Select
-          size="middle"
-          className="w-full "
-          color="blue"
-          placeholder="Service Type"
-          onChange={(value) => setConfiguration(value)}
-          value={configuration}
+        <Form.Item
+          name="configuration"
+          rules={[
+            {
+              required: true,
+              message: "Please select a configuration!",
+            },
+          ]}
+          className="w-96"
         >
-          <Option value="configured">Configured</Option>
-          <Option value="unconfigured">Unconfigured</Option>
-        </Select>
-        <Typography
-          variant="paragraph"
-          color="blue-gray"
-          className="mb-1 mt-1 text-sm"
-        ></Typography>
+          <Select
+            size="middle"
+            className="w-96"
+            color="blue"
+            placeholder="Select Configuration"
+            onChange={(value) => setConfiguration(value)}
+            value={configuration}
+          >
+            <Option value="configured">Configured</Option>
+            <Option value="unconfigured">Unconfigured</Option>
+          </Select>
+        </Form.Item>
         <Typography
           variant="paragraph"
           color="blue-gray"
@@ -316,14 +402,24 @@ const useCreate = ({ handleOpen, open }) => {
         >
           Comment
         </Typography>
-        <Input
-          size="middle"
-          color="blue"
-          placeholder="Comment"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-      </div>
+        <Form.Item name="comment" className="w-96">
+          <Input
+            size="middle"
+            color="blue"
+            className="w-96"
+            placeholder="Comment"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+        </Form.Item>
+        <Form.Item {...layout} className="w-96">
+          <Space>
+            <Button className="bg-blue-500 text-white" htmlType="submit">
+              Create
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
     </Modal>
   );
 };
