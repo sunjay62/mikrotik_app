@@ -29,8 +29,11 @@ export const useData = () => {
           config
         );
 
+        console.log(responseData);
+
         return responseData.data.data;
       } catch (error) {
+        console.log(error);
         if (axios.isAxiosError(error)) {
           if (error.response) {
             if (error.response.status === 401) {

@@ -27,9 +27,7 @@ const useCreate = ({ handleOpen, open }) => {
   const [configuration, setConfiguration] = useState("");
   const [comment, setComment] = useState("");
   const [searchInput, setSearchInput] = useState("");
-  const [siteId, setSiteId] = useState("");
-  const [siteOptions, setSiteOptions] = useState([]);
-
+  const [showPassword, setShowPassword] = useState(false);
   const { refetch } = useData();
   const [mikrotikOptions, setMikrotikOptions] = useState([]);
   const [profileOptions, setProfileOptions] = useState([]);
@@ -44,7 +42,6 @@ const useCreate = ({ handleOpen, open }) => {
     setStatus("");
     setComment("");
     setMikrotikId("");
-    setSiteId("");
     setConfiguration("");
   };
 
@@ -89,6 +86,34 @@ const useCreate = ({ handleOpen, open }) => {
   };
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const responseData = await axios.get(`${BASE_URL}/mikrotik`, config);
+
+        if (responseData && responseData.data) {
+          setMikrotikOptions(
+            responseData.data.map((site) => ({
+              value: `${site.mikrotik_id}`,
+              label: `${site.name}`,
+            }))
+          );
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
     if (mikrotikId) {
       const fetchData = async () => {
         try {
@@ -123,46 +148,6 @@ const useCreate = ({ handleOpen, open }) => {
     }
   }, [mikrotikId]);
 
-  useEffect(() => {
-    if (siteId) {
-      const fetchData = async () => {
-        try {
-          const token = localStorage.getItem("access_token");
-          const config = {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          };
-
-          const formData = {
-            id: parseInt(siteId),
-          };
-
-          console.log(formData);
-
-          const responseData = await axios.post(
-            `${BASE_URL}/sites/mikrotik`,
-            formData,
-            config
-          );
-          console.log(responseData);
-          if (responseData && responseData.data) {
-            setMikrotikOptions(
-              responseData.data.map((site) => ({
-                value: `${site.mikrotik_id}`,
-                label: `${site.name}`,
-              }))
-            );
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      };
-
-      fetchData();
-    }
-  }, [siteId]);
-
   const handleSearchInputChange = (value) => {
     setSearchInput(value);
   };
@@ -172,34 +157,6 @@ const useCreate = ({ handleOpen, open }) => {
   );
 
   console.log(profileOptions);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem("access_token");
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-
-        const responseData = await axios.get(`${BASE_URL}/sites`, config);
-
-        if (responseData && responseData.data) {
-          setSiteOptions(
-            responseData.data.map((site) => ({
-              value: `${site.id}`,
-              label: `${site.name} (${site.code})`,
-            }))
-          );
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   return (
     <Modal
@@ -277,72 +234,41 @@ const useCreate = ({ handleOpen, open }) => {
             }
           />
         </Form.Item>
-        <Typography variant="paragraph" color="blue-gray" className="mb-1 mt-2">
-          Site Location
+        <Typography
+          variant="paragraph"
+          color="blue-gray"
+          className="mb-1 mt-1 text-sm"
+        >
+          MikroTik
         </Typography>
         <Form.Item
-          name="siteId"
-          className="w-96"
+          name="mikrotik"
           rules={[
             {
               required: true,
-              message: "Please select a Site ID!",
+              message: "Please select a MikroTik!",
             },
           ]}
+          className="w-96"
         >
           <Select
-            placeholder="Select Site Location"
-            onChange={(value) => setSiteId(value)}
+            size="middle"
             className="w-96"
+            color="blue"
+            onChange={(value) => setMikrotikId(value)}
+            value={mikrotikId}
             showSearch
+            placeholder="Select MikroTik"
             optionFilterProp="children"
+            onSearch={handleSearchInputChange}
           >
-            {siteOptions.map((option) => (
-              <Option className="w-96" key={option.value} value={option.value}>
+            {filteredMikrotikOptions.map((option) => (
+              <Option key={option.value} value={option.value}>
                 {option.label}
               </Option>
             ))}
           </Select>
         </Form.Item>
-        {siteId && (
-          <>
-            <Typography
-              variant="paragraph"
-              color="blue-gray"
-              className="mb-1 mt-1 text-sm"
-            >
-              MikroTik
-            </Typography>
-            <Form.Item
-              name="mikrotik"
-              rules={[
-                {
-                  required: true,
-                  message: "Please select a MikroTik!",
-                },
-              ]}
-              className="w-96"
-            >
-              <Select
-                size="middle"
-                className="w-96"
-                color="blue"
-                onChange={(value) => setMikrotikId(value)}
-                value={mikrotikId}
-                showSearch
-                placeholder="Select MikroTik"
-                optionFilterProp="children"
-                onSearch={handleSearchInputChange}
-              >
-                {filteredMikrotikOptions.map((option) => (
-                  <Option key={option.value} value={option.value}>
-                    {option.label}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </>
-        )}
         {mikrotikId && (
           <>
             <Typography

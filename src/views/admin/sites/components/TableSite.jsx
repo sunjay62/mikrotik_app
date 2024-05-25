@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import {
-  UserPlusIcon,
   ArrowPathIcon,
   AdjustmentsHorizontalIcon,
 } from "@heroicons/react/24/solid";
@@ -12,13 +11,9 @@ import {
   Button,
   CardBody,
   CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
   IconButton,
   Tooltip,
   Input,
-  Checkbox,
 } from "@material-tailwind/react";
 import { useDataSite } from "./useDataSite";
 import axios from "axios";
@@ -26,7 +21,6 @@ import { BASE_URL } from "libs/auth-api";
 import { toast } from "react-toastify";
 import { BeatLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
-import useSiteStore from "../store/useSiteStore";
 import { HiOutlineViewList } from "react-icons/hi";
 
 const TABS = [
@@ -49,14 +43,12 @@ const TABLE_HEAD = ["No", "Site Name", "Site Code", ""];
 export function TableSite() {
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5); // Jumlah item per halaman
+  const [itemsPerPage] = useState(5);
   const { data, refetch } = useDataSite();
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [dataLoaded, setDataLoaded] = useState(false);
-  const [checkedItems, setCheckedItems] = useState({});
   const navigate = useNavigate();
-
-  const [selectedMikrotikId, setSelectedMikrotikId] = useState(null);
+  const [length, setLength] = useState("");
 
   const handleOpen = () => setOpen(!open);
 
@@ -101,6 +93,7 @@ export function TableSite() {
           user.code.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredUsers(filtered);
+      setLength(filtered.length);
     }
     setCurrentPage(1);
   };
@@ -109,49 +102,21 @@ export function TableSite() {
     if (!data) {
       refetch();
     } else {
-      setFilteredUsers(data);
+      const sortedData = [...data].sort((a, b) => a.id - b.id);
+      setFilteredUsers(sortedData);
       setDataLoaded(true);
+      setLength(data.length);
     }
   }, [data, refetch]);
 
   useEffect(() => {
     if (!dataLoaded) return;
-    setFilteredUsers(data);
-  }, [dataLoaded]);
-
-  // const handleCheckboxChange = (mikrotikId) => {
-  //   const id = parseInt(mikrotikId);
-  //   setCheckedItems((prevCheckedItems) => {
-  //     const updatedCheckedItems = { ...prevCheckedItems };
-  //     updatedCheckedItems[id] = !updatedCheckedItems[id];
-  //     return updatedCheckedItems;
-  //   });
-  // };
-
-  // const handleProfileCheck = () => {
-  //   const checkedIds = Object.keys(checkedItems)
-  //     .filter((key) => checkedItems[key])
-  //     .map((id) => parseInt(id));
-
-  //   if (checkedIds.length > 0) {
-  //     const selectedMikrotiks = data.filter((site) =>
-  //       checkedIds.includes(site.id)
-  //     );
-  //     const mikrotikDetails = selectedMikrotiks.map((site) => ({
-  //       id: site.id,
-  //       name: site.name,
-  //       code: site.code,
-  //     }));
-
-  //     useSiteStore.setState({ siteIdList: mikrotikDetails });
-  //     navigate(`/admin/sites/view-profile`);
-  //   } else {
-  //     toast.error("Please select at least one Site");
-  //   }
-  // };
+    const sortedData = [...data].sort((a, b) => a.id - b.id);
+    setFilteredUsers(sortedData);
+    setLength(sortedData.length);
+  }, [dataLoaded, data]);
 
   const handleViewSite = (siteId) => {
-    // console.log(siteId);
     navigate(`/admin/sites/view-detail/${siteId}`);
   };
 
@@ -183,15 +148,6 @@ export function TableSite() {
               />
             </div>
             <div className="mr-5 flex shrink-0 flex-col gap-2 sm:flex-row ">
-              {/* <Button
-                variant="outlined"
-                size="sm"
-                className=" flex items-center gap-2 bg-blue-600 text-white dark:bg-brandLinear dark:text-white"
-                onClick={handleProfileCheck}
-              >
-                <HiOutlineViewList strokeWidth={2} className="h-4 w-4" /> View
-                Profile
-              </Button> */}
               <Tooltip content="Synchronize Site" className="bg-gray-700 ">
                 <IconButton
                   variant="text"
@@ -248,17 +204,6 @@ export function TableSite() {
                           </div>
                         </div>
                       </td>
-                      {/* <td className={classes}>
-                        <div className="flex items-center">
-                          <div className="flex flex-col">
-                            <Checkbox
-                              color="blue"
-                              checked={checkedItems[id] || false}
-                              onChange={() => handleCheckboxChange(id)}
-                            />
-                          </div>
-                        </div>
-                      </td> */}
                       <td className={classes}>
                         <div className="flex items-center">
                           <div className="flex flex-col">
@@ -307,11 +252,11 @@ export function TableSite() {
             )}
           </table>
         </CardBody>
-        {/* Bagian footer dan navigasi halaman */}
         <CardFooter className="border-blue-gray-50 flex items-center justify-between border-t p-4">
           <p variant="small" color="blue-gray" className="font-normal">
             Page {currentPage} of{" "}
-            {Math.ceil((data?.length || 0) / itemsPerPage)}
+            {Math.ceil(filteredUsers.length / itemsPerPage)} - Total {length}{" "}
+            Items
           </p>
           <div className="flex gap-2">
             <Button
@@ -329,7 +274,7 @@ export function TableSite() {
               size="sm"
               onClick={() => paginate(currentPage + 1)}
               disabled={
-                currentPage === Math.ceil((data?.length || 0) / itemsPerPage)
+                currentPage === Math.ceil(filteredUsers.length / itemsPerPage)
               }
             >
               Next

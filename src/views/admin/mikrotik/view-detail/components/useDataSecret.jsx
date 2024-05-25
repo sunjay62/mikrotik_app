@@ -1,15 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
-import { BASE_URL } from "libs/auth-api";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { BASE_URL } from "libs/auth-api";
 
-export const useData = () => {
+export const useData = (mikrotikId) => {
   const navigate = useNavigate();
-  const { mikrotikId } = useParams();
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["data-secret"],
+    queryKey: ["data-secret-detail", mikrotikId],
     queryFn: async () => {
       try {
         const accessToken = localStorage.getItem("access_token");
@@ -24,12 +23,12 @@ export const useData = () => {
           },
         };
 
-        const responseData = await axios.get(
+        const response = await axios.get(
           `${BASE_URL}/mikrotik/${mikrotikId}/pppsecrets`,
           config
         );
 
-        return responseData.data.data;
+        return response.data.data;
       } catch (error) {
         if (axios.isAxiosError(error)) {
           if (error.response) {
@@ -55,20 +54,15 @@ export const useData = () => {
                 if (axios.isAxiosError(refreshError)) {
                   if (
                     refreshError.response &&
-                    refreshError.response.status === 401
+                    (refreshError.response.status === 401 ||
+                      refreshError.response.status === 422)
                   ) {
                     localStorage.removeItem("access_token");
                     localStorage.removeItem("refresh_token");
                     navigate("/login");
-                    toast.error("Your session is expired, please login again.");
-                  } else if (
-                    refreshError.response &&
-                    refreshError.response.status === 422
-                  ) {
-                    localStorage.removeItem("access_token");
-                    localStorage.removeItem("refresh_token");
-                    navigate("/login");
-                    toast.error("Your session is expired, please login again.");
+                    toast.error(
+                      "Your session has expired, please login again."
+                    );
                   }
                 }
               }
@@ -81,6 +75,9 @@ export const useData = () => {
         throw error;
       }
     },
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
   });
 
   return {

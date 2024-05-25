@@ -357,8 +357,8 @@ export function TableSecret() {
         <CardFooter className="border-blue-gray-50 flex items-center justify-between border-t p-4">
           <p variant="small" color="blue-gray" className="font-normal">
             Page {currentPage} of{" "}
-            {Math.ceil((filteredUsers?.length || 0) / itemsPerPage)} - Total{" "}
-            {length} Items
+            {Math.ceil(filteredUsers.length / itemsPerPage)} - Total {length}{" "}
+            Items
           </p>
           <div className="flex gap-2">
             <Button
@@ -376,7 +376,7 @@ export function TableSecret() {
               size="sm"
               onClick={() => paginate(currentPage + 1)}
               disabled={
-                currentPage === Math.ceil((data?.length || 0) / itemsPerPage)
+                currentPage === Math.ceil(filteredUsers.length / itemsPerPage)
               }
             >
               Next

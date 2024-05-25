@@ -9,7 +9,7 @@ export const useData = () => {
   const { mikrotikId } = useParams();
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["data-profile"],
+    queryKey: ["data-profile-detail"],
     queryFn: async () => {
       try {
         const accessToken = localStorage.getItem("access_token");

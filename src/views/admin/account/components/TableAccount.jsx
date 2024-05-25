@@ -20,7 +20,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { BeatLoader } from "react-spinners";
 import { BsPlus } from "react-icons/bs";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; // Corrected import statement
 
 const TABLE_HEAD = ["No", "Username", "Role", ""];
 
@@ -34,12 +34,11 @@ export function TableAccount() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [selectedUsername, setSelectedUsername] = useState(null);
   const [decodedToken, setDecodedToken] = useState({});
+  const [length, setLength] = useState("");
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems =
-    filteredUsers.length > 0
-      ? filteredUsers.slice(indexOfFirstItem, indexOfLastItem)
-      : [];
+  const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -107,6 +106,7 @@ export function TableAccount() {
             user.username.toLowerCase().includes(value.toLowerCase()))
       );
       setFilteredUsers(filtered);
+      setLength(filtered.length);
     }
     setCurrentPage(1);
   };
@@ -115,6 +115,7 @@ export function TableAccount() {
     if (data) {
       setFilteredUsers(data.data);
       setDataLoaded(true);
+      setLength(data.data.length);
     }
   }, [data]);
 
@@ -143,7 +144,7 @@ export function TableAccount() {
           shadow={false}
           className="ml-5 rounded-none dark:bg-navy-700 dark:text-white"
         >
-          <div className="mb-8  items-center justify-between gap-8 ">
+          <div className="mb-8 items-center justify-between gap-8">
             <div className="text-xl font-bold text-navy-700 dark:text-white">
               Account List
             </div>
@@ -151,8 +152,8 @@ export function TableAccount() {
               See information about all Account
             </p>
           </div>
-          <div className="flex flex-col items-center justify-between gap-4  md:flex-row">
-            <div className="flex w-full md:w-64 ">
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <div className="flex w-full md:w-64">
               <Input
                 variant="standard"
                 className="dark:bg-navy-700 dark:text-white"
@@ -162,11 +163,11 @@ export function TableAccount() {
                 onChange={(e) => handleSearch(e.target.value)}
               />
             </div>
-            <div className="flex shrink-0 flex-col gap-2 sm:flex-row ">
+            <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
               <Button
                 variant="outlined"
                 size="sm"
-                className=" flex items-center gap-2 bg-blue-600 text-white dark:bg-brandLinear dark:text-white"
+                className="flex items-center gap-2 bg-blue-600 text-white dark:bg-brandLinear dark:text-white"
                 onClick={handleOpen}
               >
                 <BsPlus strokeWidth={2} className="h-4 w-4" /> Add Account
@@ -175,13 +176,13 @@ export function TableAccount() {
           </div>
         </CardHeader>
         <CardBody className="p-5">
-          <table className="mt-4 w-full  min-w-max table-auto  text-left">
+          <table className="mt-4 w-full min-w-max table-auto text-left">
             <thead>
               <tr>
                 {TABLE_HEAD.map((head, index) => (
                   <th
                     key={head}
-                    className="border-blue-gray-100 bg-blue-gray-50/50 hover:bg-blue-gray-50  cursor-pointer border-y bg-gray-50 p-4 transition-colors dark:bg-navy-800"
+                    className="border-blue-gray-100 bg-blue-gray-50/50 hover:bg-blue-gray-50 cursor-pointer border-y bg-gray-50 p-4 transition-colors dark:bg-navy-800"
                   >
                     <p
                       variant="small"
@@ -248,25 +249,25 @@ export function TableAccount() {
                         </div>
                       </td>
 
-                      <td className={`${classes} flex  justify-end `}>
-                        <Tooltip content="Edit" className="bg-gray-700 ">
+                      <td className={`${classes} flex justify-end`}>
+                        <Tooltip content="Edit" className="bg-gray-700">
                           <IconButton
                             variant="text"
                             className="mb-2 ml-2 border bg-blue-50 hover:bg-blue-100 dark:bg-blue-800 dark:hover:bg-blue-200"
                             onClick={() => handleOpenEdit(username)}
                           >
-                            <PencilSquareIcon className="h-5 w-5  text-blue-400" />
+                            <PencilSquareIcon className="h-5 w-5 text-blue-400" />
                           </IconButton>
                         </Tooltip>
                         {!shouldHideDeleteButton && (
                           <>
-                            <Tooltip content="Delete" className="bg-gray-700 ">
+                            <Tooltip content="Delete" className="bg-gray-700">
                               <IconButton
                                 variant="text"
                                 className="mb-2 ml-2 border bg-red-50 hover:bg-red-100"
                                 onClick={() => handleDelete(username)}
                               >
-                                <TrashIcon className="h-5 w-5  text-red-400" />
+                                <TrashIcon className="h-5 w-5 text-red-400" />
                               </IconButton>
                             </Tooltip>
                           </>
@@ -286,7 +287,8 @@ export function TableAccount() {
         <CardFooter className="border-blue-gray-50 flex items-center justify-between border-t p-4">
           <p variant="small" color="blue-gray" className="font-normal">
             Page {currentPage} of{" "}
-            {Math.ceil((data?.length || 0) / itemsPerPage)}
+            {Math.ceil(filteredUsers.length / itemsPerPage)} - Total {length}{" "}
+            Items
           </p>
           <div className="flex gap-2">
             <Button
@@ -304,7 +306,7 @@ export function TableAccount() {
               size="sm"
               onClick={() => paginate(currentPage + 1)}
               disabled={
-                currentPage === Math.ceil((data?.length || 0) / itemsPerPage)
+                currentPage === Math.ceil(filteredUsers.length / itemsPerPage)
               }
             >
               Next

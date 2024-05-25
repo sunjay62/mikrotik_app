@@ -41,6 +41,7 @@ const TABLE_HEAD = [
   "IP Address",
   "Username",
   "Password",
+  "Status",
   "API Port",
   "",
 ];
@@ -48,7 +49,7 @@ const TABLE_HEAD = [
 export function TableMikrotik() {
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [openDetail, setOpenDetail] = useState(false);
+  const [length, setLength] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
   const { data, refetch } = useData();
@@ -169,6 +170,7 @@ export function TableMikrotik() {
             user.ipaddress.toLowerCase().includes(value.toLowerCase()))
       );
       setFilteredUsers(filtered);
+      setLength(filtered.length);
     }
     setCurrentPage(1);
   };
@@ -181,6 +183,7 @@ export function TableMikrotik() {
     if (data) {
       setFilteredUsers(data);
       setDataLoaded(true);
+      setLength(data.length);
     }
   }, [data]);
 
@@ -237,7 +240,7 @@ export function TableMikrotik() {
             </div>
           </div>
         </CardHeader>
-        <CardBody className="p-5">
+        <CardBody className="overflow-auto p-5">
           <table className="mt-4 w-full  min-w-max table-auto  text-left">
             <thead>
               <tr>
@@ -268,6 +271,7 @@ export function TableMikrotik() {
                       password,
                       apiport,
                       mikrotik_id,
+                      connected,
                     },
                     index
                   ) => {
@@ -387,6 +391,26 @@ export function TableMikrotik() {
                               <p
                                 variant="small"
                                 color="blue-gray"
+                                className={`font-normal ${
+                                  connected === 1
+                                    ? "bg-green-400"
+                                    : "bg-red-400"
+                                } rounded pb-1 pl-2 pr-2 pt-1 text-white`}
+                              >
+                                {connected === 1
+                                  ? "Connected"
+                                  : "Not Connected"}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td className={classes}>
+                          <div className="flex items-center gap-3">
+                            <div className="flex flex-col">
+                              <p
+                                variant="small"
+                                color="blue-gray"
                                 className="font-normal"
                               >
                                 {apiport}
@@ -438,7 +462,8 @@ export function TableMikrotik() {
         <CardFooter className="border-blue-gray-50 flex items-center justify-between border-t p-4">
           <p variant="small" color="blue-gray" className="font-normal">
             Page {currentPage} of{" "}
-            {Math.ceil((data?.length || 0) / itemsPerPage)}
+            {Math.ceil(filteredUsers.length / itemsPerPage)} - Total {length}{" "}
+            Items
           </p>
           <div className="flex gap-2">
             <Button
@@ -456,7 +481,7 @@ export function TableMikrotik() {
               size="sm"
               onClick={() => paginate(currentPage + 1)}
               disabled={
-                currentPage === Math.ceil((data?.length || 0) / itemsPerPage)
+                currentPage === Math.ceil(filteredUsers.length / itemsPerPage)
               }
             >
               Next

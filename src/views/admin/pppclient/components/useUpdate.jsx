@@ -23,6 +23,9 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
   const [profileOptions, setProfileOptions] = useState([]);
   const [profileLabel, setProfileLabel] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [siteOptions, setSiteOptions] = useState([]);
+  const [siteId, setSiteId] = useState("");
+  const [siteLabel, setSiteLabel] = useState("");
   const [selectedMikrotikName, setSelectedMikrotikName] = useState("");
   const { TextArea } = Input;
 
@@ -32,8 +35,9 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
     }
   }, [profile, profileLabel]);
 
+  // Fetch client data
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchClientData = async () => {
       try {
         const token = localStorage.getItem("access_token");
         const config = {
@@ -47,8 +51,6 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
           config
         );
 
-        // console.log(responseData.data);
-
         setName(responseData.data.name);
         setPassword(responseData.data.password);
         setService(responseData.data.service_type);
@@ -57,16 +59,56 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
         setStatus(responseData.data.status);
         setConfiguration(responseData.data.configuration);
         setComment(responseData.data.comment);
+        setSiteId(responseData.data.site_id);
         setProfileLabel(responseData.data.profile);
       } catch (error) {
         console.log(error);
       }
     };
 
-    fetchData();
+    fetchClientData();
   }, [selectedClientId]);
 
-  const handleUpdate = async () => {
+  // Fetch sites data
+  useEffect(() => {
+    const fetchSitesData = async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const responseData = await axios.get(`${BASE_URL}/sites`, config);
+        if (responseData && responseData.data) {
+          setSiteOptions(
+            responseData.data.map((site) => ({
+              value: `${site.id}`,
+              label: `${site.name} (${site.code})`,
+            }))
+          );
+
+          // Find the label for the initial site ID
+          const initialSite = responseData.data.find(
+            (site) => site.id === siteId
+          );
+          if (initialSite) {
+            setSiteLabel(`${initialSite.name} (${initialSite.code})`);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (siteId) {
+      fetchSitesData();
+    }
+  }, [siteId]);
+
+  // Fetch MikroTik options based on siteId
+  const fetchMikrotikOptions = async (siteId) => {
     try {
       const token = localStorage.getItem("access_token");
       const config = {
@@ -76,74 +118,42 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
       };
 
       const formData = {
-        client_id: selectedClientId,
-        name: name,
-        password: password,
-        comment: comment,
-        mikrotik_id: parseInt(mikrotikId),
-        profile: profile,
-        service_type: service,
-        status: status,
-        configuration: configuration,
+        id: parseInt(siteId),
       };
 
-      // console.log(formData);
-
-      const response = await toast.promise(
-        axios.put(`${BASE_URL}/clientppp`, formData, config),
-        {
-          pending: "Updating ...",
-          success: "Updated Successfully!",
-        }
+      const responseData = await axios.post(
+        `${BASE_URL}/sites/mikrotik`,
+        formData,
+        config
       );
 
-      if (response.status === 200) {
-        handleOpenEdit();
-        refetch();
+      if (responseData && responseData.data) {
+        setMikrotikOptions(
+          responseData.data.map((site) => ({
+            value: `${site.mikrotik_id}`,
+            label: `${site.name}`,
+          }))
+        );
+      }
+
+      if (responseData && responseData.data) {
+        const selectedMikrotik = responseData.data.find(
+          (mikrotik) => mikrotik.mikrotik_id === mikrotikId
+        );
+        if (selectedMikrotik) {
+          setSelectedMikrotikName(selectedMikrotik.name);
+        }
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      console.log(error);
     }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem("access_token");
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-
-        const responseData = await axios.get(`${BASE_URL}/mikrotik`, config);
-
-        // console.log(responseData);
-
-        if (responseData && responseData.data) {
-          setMikrotikOptions(
-            responseData.data.map((site) => ({
-              value: `${site.mikrotik_id}`,
-              label: `${site.name}`,
-            }))
-          );
-        }
-
-        if (responseData && responseData.data) {
-          const selectedMikrotik = responseData.data.find(
-            (mikrotik) => mikrotik.mikrotik_id === mikrotikId
-          );
-          if (selectedMikrotik) {
-            setSelectedMikrotikName(selectedMikrotik.name);
-          }
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, [mikrotikId]);
+    if (siteId) {
+      fetchMikrotikOptions(siteId);
+    }
+  }, [siteId]);
 
   useEffect(() => {
     if (mikrotikId) {
@@ -185,12 +195,51 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
     }
   }, [mikrotikId]);
 
+  const handleUpdate = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const formData = {
+        client_id: selectedClientId,
+        name: name,
+        password: password,
+        comment: comment,
+        mikrotik_id: parseInt(mikrotikId),
+        profile: profile,
+        service_type: service,
+        status: status,
+        configuration: configuration,
+      };
+
+      const response = await toast.promise(
+        axios.put(`${BASE_URL}/clientppp`, formData, config),
+        {
+          pending: "Updating ...",
+          success: "Updated Successfully!",
+        }
+      );
+
+      if (response.status === 200) {
+        handleOpenEdit();
+        refetch();
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+      console.log(error);
+    }
+  };
+
   const handleChangeSite = (value) => {
-    const selectedOption = profileOptions.find(
-      (option) => option.label === value
-    );
+    const selectedOption = siteOptions.find((option) => option.value === value);
     if (selectedOption) {
-      setProfile(selectedOption.value);
+      setSiteId(selectedOption.value);
+      setSiteLabel(selectedOption.label);
+      fetchMikrotikOptions(selectedOption.value); // Fetch MikroTik options based on selected site
     }
   };
 
@@ -198,7 +247,6 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
     setSearchInput(value);
   };
 
-  // Render opsi yang difilter berdasarkan input pencarian
   const filteredMikrotikOptions = mikrotikOptions.filter((option) =>
     option.label.toLowerCase().includes(searchInput.toLowerCase())
   );
@@ -259,6 +307,23 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
         </button>
       </div>
       <Typography variant="paragraph" color="blue-gray" className="mb-1 mt-2">
+        Site Location
+      </Typography>
+      <Select
+        placeholder="Select Site Location"
+        value={siteLabel} // Set initial value
+        onChange={handleChangeSite} // Use the new handleChangeSite function
+        className="w-full"
+        showSearch
+        optionFilterProp="children"
+      >
+        {siteOptions.map((option) => (
+          <Option className="w-96" key={option.value} value={option.value}>
+            {option.label}
+          </Option>
+        ))}
+      </Select>
+      <Typography variant="paragraph" color="blue-gray" className="mb-1 mt-2">
         MikroTik
       </Typography>
       <Select
@@ -297,7 +362,7 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
           <Select
             placeholder="Profile"
             value={profileLabel}
-            onChange={handleChangeSite}
+            onChange={(value) => setProfile(value)}
             className="w-full"
           >
             {filteredProfileOptions.map((option) => (
