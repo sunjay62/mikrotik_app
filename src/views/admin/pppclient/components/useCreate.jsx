@@ -208,7 +208,7 @@ const useCreate = ({ handleOpen, open }) => {
         handleOpen();
         resetForm();
       }}
-      width={430}
+      width={435}
       footer={null}
       className="-mt-16"
       title="Create New Secret"
@@ -282,7 +282,6 @@ const useCreate = ({ handleOpen, open }) => {
         </Typography>
         <Form.Item
           name="siteId"
-          className="w-96"
           rules={[
             {
               required: true,
@@ -293,7 +292,7 @@ const useCreate = ({ handleOpen, open }) => {
           <Select
             placeholder="Select Site Location"
             onChange={(value) => setSiteId(value)}
-            className="w-96"
+            style={{ width: 384 }}
             showSearch
             optionFilterProp="children"
           >
@@ -321,11 +320,10 @@ const useCreate = ({ handleOpen, open }) => {
                   message: "Please select a MikroTik!",
                 },
               ]}
-              className="w-96"
             >
               <Select
                 size="middle"
-                className="w-96"
+                style={{ width: 384 }}
                 color="blue"
                 onChange={(value) => setMikrotikId(value)}
                 value={mikrotikId}
@@ -360,11 +358,10 @@ const useCreate = ({ handleOpen, open }) => {
                   message: "Please select a profile!",
                 },
               ]}
-              className="w-96"
             >
               <Select
                 size="middle"
-                className="w-96"
+                style={{ width: 384 }}
                 color="blue"
                 placeholder="Select Profile"
                 onChange={(value) => setProfile(value)}
@@ -394,11 +391,10 @@ const useCreate = ({ handleOpen, open }) => {
               message: "Please select a service type!",
             },
           ]}
-          className="w-96"
         >
           <Select
             size="middle"
-            className="w-96"
+            style={{ width: 384 }}
             color="blue"
             placeholder="Select Service Type"
             onChange={(value) => setService(value)}
@@ -428,11 +424,10 @@ const useCreate = ({ handleOpen, open }) => {
               message: "Please select a status!",
             },
           ]}
-          className="w-96"
         >
           <Select
             size="middle"
-            className="w-96"
+            style={{ width: 384 }}
             color="blue"
             placeholder="Select Status"
             onChange={(value) => setStatus(value)}
@@ -457,11 +452,10 @@ const useCreate = ({ handleOpen, open }) => {
               message: "Please select a configuration!",
             },
           ]}
-          className="w-96"
         >
           <Select
             size="middle"
-            className="w-96"
+            style={{ width: 384 }}
             color="blue"
             placeholder="Select Configuration"
             onChange={(value) => setConfiguration(value)}
@@ -478,7 +472,7 @@ const useCreate = ({ handleOpen, open }) => {
         >
           Comment
         </Typography>
-        <Form.Item name="comment" className="w-96">
+        <Form.Item name="comment">
           <Input
             size="middle"
             color="blue"

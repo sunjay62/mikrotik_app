@@ -13,7 +13,7 @@ const MiniCalendar = () => {
       <Calendar
         onChange={onChange}
         value={value}
-        prevLabel={<MdChevronLeft className="ml-1 h-6 w-6 " />}
+        prevLabel={<MdChevronLeft className=" ml-1 h-6 w-6 " />}
         nextLabel={<MdChevronRight className="ml-1 h-6 w-6 " />}
         view={"month"}
       />

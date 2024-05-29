@@ -10,16 +10,16 @@ import {
   Input,
 } from "@material-tailwind/react";
 import { useData } from "./useData";
-
 import { BeatLoader } from "react-spinners";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const TABLE_HEAD = ["No", "Name", "Service", "Status", "Profile"];
 
 export function TableSecret() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
-  const { data } = useData();
+  const { nameSecret } = useParams();
+  const { data, isLoading } = useData(nameSecret);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [length, setLength] = useState("");
@@ -111,109 +111,114 @@ export function TableSecret() {
           </div>
         </CardHeader>
         <CardBody className="px-0">
-          <table className="mt-4 w-full min-w-max table-auto text-left">
-            <thead>
-              <tr>
-                {TABLE_HEAD.map((head, index) => (
-                  <th
-                    key={head}
-                    className="border-blue-gray-100 bg-blue-gray-50/50 hover:bg-blue-gray-50  cursor-pointer border-y bg-gray-50 p-4 transition-colors dark:bg-navy-800"
-                  >
-                    <p
-                      variant="small"
-                      color="blue-gray"
-                      className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+          {isLoading ? (
+            <div className="flex h-full items-center justify-center">
+              <BeatLoader color="#3B82F6" size={15} />
+            </div>
+          ) : (
+            <table className="mt-4 w-full min-w-max table-auto text-left">
+              <thead>
+                <tr>
+                  {TABLE_HEAD.map((head, index) => (
+                    <th
+                      key={head}
+                      className="border-blue-gray-100 bg-blue-gray-50/50 hover:bg-blue-gray-50  cursor-pointer border-y bg-gray-50 p-4 transition-colors dark:bg-navy-800"
                     >
-                      {head} {index !== TABLE_HEAD.length - 1 && <>&nbsp;</>}
-                    </p>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            {dataLoaded && data ? (
-              <tbody>
-                {currentItems.map(
-                  ({ name, status, service_type, profile }, index) => {
-                    const actualIndex = indexOfFirstItem + index + 1;
-                    const classes =
-                      index === currentItems.length - 1
-                        ? "p-4"
-                        : "p-4 border-b border-blue-gray-50";
+                      <p
+                        variant="small"
+                        color="blue-gray"
+                        className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+                      >
+                        {head} {index !== TABLE_HEAD.length - 1 && <>&nbsp;</>}
+                      </p>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              {dataLoaded && data ? (
+                <tbody>
+                  {currentItems.map(
+                    ({ name, status, service_type, profile }, index) => {
+                      const actualIndex = indexOfFirstItem + index + 1;
+                      const classes =
+                        index === currentItems.length - 1
+                          ? "p-4"
+                          : "p-4 border-b border-blue-gray-50";
 
-                    return (
-                      <tr key={actualIndex}>
-                        <td className={classes}>
-                          <div className="flex items-center gap-3">
-                            <div className="flex flex-col">
-                              <p
-                                variant="small"
-                                color="blue-gray"
-                                className="font-normal"
-                              >
-                                {actualIndex}
-                              </p>
+                      return (
+                        <tr key={actualIndex}>
+                          <td className={classes}>
+                            <div className="flex items-center gap-3">
+                              <div className="flex flex-col">
+                                <p
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {actualIndex}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className={classes}>
-                          <div className="flex items-center gap-3">
-                            <div className="flex flex-col">
-                              <p
-                                variant="small"
-                                color="blue-gray"
-                                className="font-normal"
-                              >
-                                {name}
-                              </p>
+                          </td>
+                          <td className={classes}>
+                            <div className="flex items-center gap-3">
+                              <div className="flex flex-col">
+                                <p
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {name}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className={classes}>
-                          <div className="flex items-center gap-3">
-                            <div className="flex flex-col">
-                              <p
-                                variant="small"
-                                color="blue-gray"
-                                className="font-normal"
-                              >
-                                {service_type}
-                              </p>
+                          </td>
+                          <td className={classes}>
+                            <div className="flex items-center gap-3">
+                              <div className="flex flex-col">
+                                <p
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {service_type}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className={classes}>
-                          <div className="flex items-center gap-3">
-                            <div className="flex flex-col">
-                              <p
-                                variant="small"
-                                color="blue-gray"
-                                className={`font-normal ${
-                                  status === "disable"
-                                    ? "bg-red-400"
-                                    : "bg-green-400"
-                                } rounded pb-1 pl-2 pr-2 pt-1 text-white`}
-                              >
-                                {status.charAt(0).toUpperCase() +
-                                  status.slice(1)}
-                              </p>
+                          </td>
+                          <td className={classes}>
+                            <div className="flex items-center gap-3">
+                              <div className="flex flex-col">
+                                <p
+                                  variant="small"
+                                  color="blue-gray"
+                                  className={`font-normal ${
+                                    status === "disable"
+                                      ? "bg-red-400"
+                                      : "bg-green-400"
+                                  } rounded pb-1 pl-2 pr-2 pt-1 text-white`}
+                                >
+                                  {status.charAt(0).toUpperCase() +
+                                    status.slice(1)}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className={classes}>
-                          <div className="flex items-center gap-3">
-                            <div className="flex flex-col">
-                              <p
-                                variant="small"
-                                color="blue-gray"
-                                className="font-normal"
-                              >
-                                {profile}
-                              </p>
+                          </td>
+                          <td className={classes}>
+                            <div className="flex items-center gap-3">
+                              <div className="flex flex-col">
+                                <p
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {profile}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        </td>
+                          </td>
 
-                        {/* <td className={`${classes} flex justify-end`}>
+                          {/* <td className={`${classes} flex justify-end`}>
                           <Tooltip content="Edit" className="bg-gray-700 ">
                             <IconButton
                               variant="text"
@@ -234,17 +239,18 @@ export function TableSecret() {
                             </IconButton>
                           </Tooltip>
                         </td> */}
-                      </tr>
-                    );
-                  }
-                )}
-              </tbody>
-            ) : (
-              <div className="ml-72 mt-10 flex h-full w-full items-center justify-center">
-                <BeatLoader color="#3B82F6" size={15} />
-              </div>
-            )}
-          </table>
+                        </tr>
+                      );
+                    }
+                  )}
+                </tbody>
+              ) : (
+                <div className="ml-72 mt-10 flex h-full w-full items-center justify-center">
+                  <BeatLoader color="#3B82F6" size={15} />
+                </div>
+              )}
+            </table>
+          )}
         </CardBody>
         <CardFooter className="border-blue-gray-50 flex items-center justify-between border-t p-4">
           <p variant="small" color="blue-gray" className="font-normal">

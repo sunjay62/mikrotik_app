@@ -57,6 +57,8 @@ const TableStatistic = () => {
         config
       );
 
+      console.log(responseData);
+
       if (responseData.data.current_info === null) {
         setLastDisconnect("");
         setName("");

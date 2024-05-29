@@ -134,7 +134,7 @@ const useCreate = ({ handleOpen, open }) => {
         resetForm();
       }}
       footer={null}
-      width={430}
+      width={435}
     >
       <Form
         {...layout}
@@ -244,7 +244,7 @@ const useCreate = ({ handleOpen, open }) => {
           <Select
             placeholder="Site ID"
             onChange={(value) => setSiteId(value)}
-            className="w-96"
+            style={{ width: 384 }}
           >
             {siteOptions.map((option) => (
               <Option className="w-96" key={option.value} value={option.value}>

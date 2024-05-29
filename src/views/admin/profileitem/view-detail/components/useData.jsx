@@ -4,12 +4,12 @@ import { BASE_URL } from "libs/auth-api";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-export const useData = () => {
+export const useData = (nameSecret) => {
   const navigate = useNavigate();
   const { name } = useParams();
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["data-secret-profile"],
+    queryKey: ["data-secret-profile", nameSecret],
     queryFn: async () => {
       try {
         const accessToken = localStorage.getItem("access_token");
@@ -84,6 +84,9 @@ export const useData = () => {
         throw error;
       }
     },
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
   });
 
   return {

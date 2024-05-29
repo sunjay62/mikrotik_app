@@ -1,13 +1,11 @@
 import MiniCalendar from "components/calendar/MiniCalendar";
 import WeeklyRevenue from "views/admin/default/components/WeeklyRevenue";
 import TotalSpent from "views/admin/default/components/TotalSpent";
-import PieChartCard from "views/admin/default/components/PieChartCard";
-import { IoMdHome } from "react-icons/io";
-import { IoDocuments } from "react-icons/io5";
-import { MdBarChart, MdDashboard } from "react-icons/md";
-
+import ConfigureChartCard from "views/admin/default/components/ConfigureChartCard";
+import ClientChartCard from "views/admin/default/components/ClientChartCard";
+import MikrotikChartCard from "views/admin/default/components/MikrotikChartCard";
+import { MdBarChart, MdBusiness, MdPerson } from "react-icons/md";
 import { columnsDataCheck, columnsDataComplex } from "./variables/columnsData";
-
 import Widget from "components/widget/Widget";
 import CheckTable from "views/admin/default/components/CheckTable";
 import ComplexTable from "views/admin/default/components/ComplexTable";
@@ -15,53 +13,93 @@ import DailyTraffic from "views/admin/default/components/DailyTraffic";
 import TaskCard from "views/admin/default/components/TaskCard";
 import tableDataCheck from "./variables/tableDataCheck.json";
 import tableDataComplex from "./variables/tableDataComplex.json";
+import axios from "axios";
+import { BASE_URL } from "libs/auth-api";
+import { useEffect, useState } from "react";
+import { FaServer } from "react-icons/fa";
 
 const Dashboard = () => {
+  const token = localStorage.getItem("access_token");
+  const [mikrotik, setMikrotik] = useState("");
+  const [admin, setAdmin] = useState("");
+  const [site, setSite] = useState("");
+  const [client, setClient] = useState("");
+  const [disable, setDisable] = useState("");
+  const [enable, setEnable] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await axios.get(`${BASE_URL}/dashboard`, config);
+        setMikrotik(response.data.mikrotik.total);
+        setAdmin(response.data.total_admin);
+        setSite(response.data.total_site);
+        setClient(response.data.client.total);
+        setDisable(response.data.client.disable);
+        setEnable(response.data.client.enable);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div>
       {/* Card widget */}
 
       <div className="mt-3 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-6">
         <Widget
-          icon={<MdBarChart className="h-7 w-7" />}
+          icon={<FaServer className="h-7 w-7" />}
           title={"Total MikroTik"}
-          subtitle={"5"}
+          subtitle={mikrotik}
         />
         <Widget
-          icon={<IoDocuments className="h-6 w-6" />}
+          icon={<MdBusiness className="h-6 w-6" />}
           title={"Total Sites"}
-          subtitle={"7"}
+          subtitle={site}
         />
         <Widget
-          icon={<MdBarChart className="h-7 w-7" />}
+          icon={<MdPerson className="h-7 w-7" />}
           title={"Total Account"}
-          subtitle={"241"}
+          subtitle={admin}
         />
         <Widget
-          icon={<MdDashboard className="h-6 w-6" />}
+          icon={<MdBarChart className="h-6 w-6" />}
           title={"Total PPP Client"}
-          subtitle={"1331"}
+          subtitle={client}
         />
         <Widget
           icon={<MdBarChart className="h-7 w-7" />}
-          title={"PPP Configured"}
-          subtitle={"145"}
+          title={"Total Enable Client"}
+          subtitle={enable}
         />
         <Widget
-          icon={<IoMdHome className="h-6 w-6" />}
-          title={"PPP Unconfigured"}
-          subtitle={"2"}
+          icon={<MdBarChart className="h-6 w-6" />}
+          title={"Total Disable Client"}
+          subtitle={disable}
         />
       </div>
 
       <div className="mt-5 flex gap-5 ">
-        {/* Pie Chart */}
         <div className="w-full rounded-[20px]">
-          <PieChartCard />
+          <MikrotikChartCard />
         </div>
-
-        {/* Mini Calendar */}
-        <div className="rounded-[20px]  ">
+        <div className="w-full rounded-[20px]">
+          <ConfigureChartCard />
+        </div>
+      </div>
+      <div className="mt-5 flex gap-5 ">
+        <div className="w-full rounded-[20px]">
+          <ClientChartCard />
+        </div>
+        <div className=" rounded-[20px]">
           <MiniCalendar />
         </div>
       </div>
