@@ -76,7 +76,7 @@ const useCreate = ({ handleOpen, open }) => {
       ]}
     >
       <Typography variant="paragraph" color="blue-gray" className="mb-1 mt-2">
-        Username
+        <span className="text-red-500">*</span> Username
       </Typography>
       <Input
         placeholder="Device Name"
@@ -84,7 +84,7 @@ const useCreate = ({ handleOpen, open }) => {
         onChange={(e) => setUsername(e.target.value)}
       />
       <Typography variant="paragraph" color="blue-gray" className="mb-1 mt-2">
-        Password
+        <span className="text-red-500">*</span> Password
       </Typography>
       <div style={{ position: "relative" }}>
         <Input.Password

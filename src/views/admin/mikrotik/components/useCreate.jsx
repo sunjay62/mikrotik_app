@@ -147,7 +147,7 @@ const useCreate = ({ handleOpen, open }) => {
         }}
       >
         <Typography variant="paragraph" color="blue-gray" className="mb-1 mt-2">
-          Device Name
+          <span className="text-red-500">*</span> Device Name
         </Typography>
         <Form.Item
           name="name"
@@ -166,7 +166,7 @@ const useCreate = ({ handleOpen, open }) => {
           />
         </Form.Item>
         <Typography variant="paragraph" color="blue-gray" className="mb-1 mt-2">
-          IP Address
+          <span className="text-red-500">*</span> IP Address
         </Typography>
         <Form.Item
           name="ipaddress"
@@ -191,7 +191,7 @@ const useCreate = ({ handleOpen, open }) => {
           />
         </Form.Item>
         <Typography variant="paragraph" color="blue-gray" className="mb-1 mt-2">
-          Username
+          <span className="text-red-500">*</span> Username
         </Typography>
         <Form.Item
           name="username"
@@ -210,7 +210,7 @@ const useCreate = ({ handleOpen, open }) => {
           />
         </Form.Item>
         <Typography variant="paragraph" color="blue-gray" className="mb-1 mt-2">
-          Password
+          <span className="text-red-500">*</span> Password
         </Typography>
         <Form.Item
           name="password"
@@ -229,7 +229,7 @@ const useCreate = ({ handleOpen, open }) => {
           />
         </Form.Item>
         <Typography variant="paragraph" color="blue-gray" className="mb-1 mt-2">
-          Site ID
+          <span className="text-red-500">*</span> Site ID
         </Typography>
         <Form.Item
           name="siteId"
@@ -254,7 +254,7 @@ const useCreate = ({ handleOpen, open }) => {
           </Select>
         </Form.Item>
         <Typography variant="paragraph" color="blue-gray" className="mb-1 mt-2">
-          API Port
+          <span className="text-red-500">*</span> API Port
         </Typography>
         <Form.Item
           name="apiport"

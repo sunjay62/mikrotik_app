@@ -227,7 +227,7 @@ const useCreate = ({ handleOpen, open }) => {
           color="blue-gray"
           className="mb-1 mt-1 text-sm"
         >
-          Name
+          <span className="text-red-500">*</span> Name
         </Typography>
         <Form.Item
           name="name"
@@ -253,7 +253,7 @@ const useCreate = ({ handleOpen, open }) => {
           color="blue-gray"
           className="mb-1 mt-1 text-sm"
         >
-          Password
+          <span className="text-red-500">*</span> Password
         </Typography>
         <Form.Item
           name="password"
@@ -278,7 +278,7 @@ const useCreate = ({ handleOpen, open }) => {
           />
         </Form.Item>
         <Typography variant="paragraph" color="blue-gray" className="mb-1 mt-2">
-          Site Location
+          <span className="text-red-500">*</span> Site Location
         </Typography>
         <Form.Item
           name="siteId"
@@ -310,7 +310,7 @@ const useCreate = ({ handleOpen, open }) => {
               color="blue-gray"
               className="mb-1 mt-1 text-sm"
             >
-              MikroTik
+              <span className="text-red-500">*</span> MikroTik
             </Typography>
             <Form.Item
               name="mikrotik"
@@ -348,7 +348,7 @@ const useCreate = ({ handleOpen, open }) => {
               color="blue-gray"
               className="mb-1 mt-1 text-sm"
             >
-              Profile
+              <span className="text-red-500">*</span> Profile
             </Typography>
             <Form.Item
               name="profile"
@@ -381,7 +381,7 @@ const useCreate = ({ handleOpen, open }) => {
           color="blue-gray"
           className="mb-1 mt-1 text-sm"
         >
-          Service Type
+          <span className="text-red-500">*</span> Service Type
         </Typography>
         <Form.Item
           name="service"
@@ -414,7 +414,7 @@ const useCreate = ({ handleOpen, open }) => {
           color="blue-gray"
           className="mb-1 mt-1 text-sm"
         >
-          Status
+          <span className="text-red-500">*</span> Status
         </Typography>
         <Form.Item
           name="status"
@@ -442,7 +442,7 @@ const useCreate = ({ handleOpen, open }) => {
           color="blue-gray"
           className="mb-1 mt-1 text-sm"
         >
-          Configuration
+          <span className="text-red-500">*</span> Configuration
         </Typography>
         <Form.Item
           name="configuration"
