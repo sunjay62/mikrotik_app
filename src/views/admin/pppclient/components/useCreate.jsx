@@ -482,7 +482,7 @@ const useCreate = ({ handleOpen, open }) => {
             onChange={(e) => setComment(e.target.value)}
           />
         </Form.Item>
-        <Form.Item {...layout} className="w-96">
+        <Form.Item {...layout} className="flex w-96 justify-end">
           <Space>
             <Button className="bg-blue-500 text-white" htmlType="submit">
               Create

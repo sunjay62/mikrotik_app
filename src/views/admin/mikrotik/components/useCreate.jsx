@@ -273,7 +273,7 @@ const useCreate = ({ handleOpen, open }) => {
             className="w-96"
           />
         </Form.Item>
-        <Form.Item {...layout}>
+        <Form.Item {...layout} className="flex justify-end">
           <Space>
             <Button className="bg-blue-500 text-white" htmlType="submit">
               Create

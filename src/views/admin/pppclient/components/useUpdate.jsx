@@ -29,6 +29,20 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
   const [selectedMikrotikName, setSelectedMikrotikName] = useState("");
   const { TextArea } = Input;
 
+  const resetFields = () => {
+    setName("");
+    setPassword("");
+    setMikrotikId("");
+    setProfile("");
+    setService("");
+    setStatus("");
+    setConfiguration("");
+    setComment("");
+    setSiteId("");
+    setSiteLabel("");
+    setSelectedMikrotikName("");
+  };
+
   useEffect(() => {
     if (profile && !profileLabel) {
       setProfileLabel(profile);
@@ -50,6 +64,8 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
           `${BASE_URL}/clientppp?client_id=${selectedClientId}`,
           config
         );
+
+        console.log(responseData);
 
         setName(responseData.data.name);
         setPassword(responseData.data.password);
@@ -89,12 +105,17 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
             }))
           );
 
-          // Find the label for the initial site ID
-          const initialSite = responseData.data.find(
-            (site) => site.id === siteId
-          );
-          if (initialSite) {
-            setSiteLabel(`${initialSite.name} (${initialSite.code})`);
+          // If siteId is not set, show all sites in the dropdown
+          if (!siteId) {
+            setSiteLabel("Select Site Location");
+          } else {
+            // Find the label for the initial site ID
+            const initialSite = responseData.data.find(
+              (site) => site.id === siteId
+            );
+            if (initialSite) {
+              setSiteLabel(`${initialSite.name} (${initialSite.code})`);
+            }
           }
         }
       } catch (error) {
@@ -102,9 +123,7 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
       }
     };
 
-    if (siteId) {
-      fetchSitesData();
-    }
+    fetchSitesData();
   }, [siteId]);
 
   // Fetch MikroTik options based on siteId
@@ -156,8 +175,8 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
   }, [siteId]);
 
   useEffect(() => {
-    if (mikrotikId) {
-      const fetchData = async () => {
+    const fetchData = async () => {
+      if (mikrotikId) {
         try {
           const token = localStorage.getItem("access_token");
           const config = {
@@ -178,21 +197,16 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
                 label: `${site.name}`,
               }))
             );
-
-            // Set the initial profile state to the first available option
-            if (profileOptions.length > 0) {
-              setProfile(profileOptions[0].value);
-            }
           }
         } catch (error) {
           console.log(error);
         }
-      };
+      } else {
+        setProfileOptions([]);
+      }
+    };
 
-      fetchData();
-    } else {
-      setProfileOptions([]);
-    }
+    fetchData();
   }, [mikrotikId]);
 
   const handleUpdate = async () => {
@@ -226,6 +240,7 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
 
       if (response.status === 200) {
         handleOpenEdit();
+        resetFields();
         refetch();
       }
     } catch (error) {
@@ -259,7 +274,10 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
     <Modal
       title="Edit Secret"
       open={openEdit}
-      onCancel={handleOpenEdit}
+      onCancel={() => {
+        handleOpenEdit();
+        resetFields();
+      }}
       className="-mt-16"
       footer={[
         <Button
@@ -311,8 +329,8 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
       </Typography>
       <Select
         placeholder="Select Site Location"
-        value={siteLabel} // Set initial value
-        onChange={handleChangeSite} // Use the new handleChangeSite function
+        value={siteLabel}
+        onChange={handleChangeSite}
         className="w-full"
         showSearch
         optionFilterProp="children"
@@ -323,33 +341,40 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
           </Option>
         ))}
       </Select>
-      <Typography variant="paragraph" color="blue-gray" className="mb-1 mt-2">
-        MikroTik
-      </Typography>
-      <Select
-        placeholder="MikroTik"
-        value={selectedMikrotikName}
-        onChange={(value) => {
-          const selectedMikrotik = mikrotikOptions.find(
-            (option) => option.label === value
-          );
-          if (selectedMikrotik) {
-            setMikrotikId(selectedMikrotik.value);
-            setSelectedMikrotikName(selectedMikrotik.label);
-          }
-        }}
-        className="w-full"
-        showSearch
-        onSearch={handleSearchInputChange}
-        filterOption={false}
-      >
-        {filteredMikrotikOptions.map((option) => (
-          <Option key={option.value} value={option.label}>
-            {option.label}
-          </Option>
-        ))}
-      </Select>
-
+      {siteId && (
+        <>
+          <Typography
+            variant="paragraph"
+            color="blue-gray"
+            className="mb-1 mt-2"
+          >
+            MikroTik
+          </Typography>
+          <Select
+            placeholder="MikroTik"
+            value={selectedMikrotikName}
+            onChange={(value) => {
+              const selectedMikrotik = mikrotikOptions.find(
+                (option) => option.label === value
+              );
+              if (selectedMikrotik) {
+                setMikrotikId(selectedMikrotik.value);
+                setSelectedMikrotikName(selectedMikrotik.label);
+              }
+            }}
+            className="w-full"
+            showSearch
+            onSearch={handleSearchInputChange}
+            filterOption={false}
+          >
+            {filteredMikrotikOptions.map((option) => (
+              <Option key={option.value} value={option.label}>
+                {option.label}
+              </Option>
+            ))}
+          </Select>
+        </>
+      )}
       {mikrotikId && (
         <>
           <Typography
@@ -361,8 +386,11 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
           </Typography>
           <Select
             placeholder="Profile"
-            value={profileLabel}
-            onChange={(value) => setProfile(value)}
+            value={profile}
+            onChange={(value) => {
+              setProfile(value);
+              setProfileLabel(value);
+            }}
             className="w-full"
           >
             {filteredProfileOptions.map((option) => (

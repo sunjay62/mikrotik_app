@@ -17,6 +17,7 @@ import axios from "axios";
 import { BASE_URL } from "libs/auth-api";
 import { useEffect, useState } from "react";
 import { FaServer } from "react-icons/fa";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const Dashboard = () => {
   const token = localStorage.getItem("access_token");
@@ -26,6 +27,8 @@ const Dashboard = () => {
   const [client, setClient] = useState("");
   const [disable, setDisable] = useState("");
   const [enable, setEnable] = useState("");
+
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,43 +51,77 @@ const Dashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [token]);
+
+  const handleWidgetClick = (url) => {
+    navigate(url);
+  };
 
   return (
     <div>
       {/* Card widget */}
 
       <div className="mt-3 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-6">
-        <Widget
-          icon={<FaServer className="h-7 w-7" />}
-          title={"Total MikroTik"}
-          subtitle={mikrotik}
-        />
-        <Widget
-          icon={<MdBusiness className="h-6 w-6" />}
-          title={"Total Sites"}
-          subtitle={site}
-        />
-        <Widget
-          icon={<MdPerson className="h-7 w-7" />}
-          title={"Total Account"}
-          subtitle={admin}
-        />
-        <Widget
-          icon={<MdBarChart className="h-6 w-6" />}
-          title={"Total PPP Client"}
-          subtitle={client}
-        />
-        <Widget
-          icon={<MdBarChart className="h-7 w-7" />}
-          title={"Total Enable Client"}
-          subtitle={enable}
-        />
-        <Widget
-          icon={<MdBarChart className="h-6 w-6" />}
-          title={"Total Disable Client"}
-          subtitle={disable}
-        />
+        <div
+          className="cursor-pointer"
+          onClick={() => handleWidgetClick("/admin/mikrotik")}
+        >
+          <Widget
+            icon={<FaServer className="h-7 w-7" />}
+            title={"Total MikroTik"}
+            subtitle={mikrotik}
+          />
+        </div>
+        <div
+          className="cursor-pointer"
+          onClick={() => handleWidgetClick("/admin/sites")}
+        >
+          <Widget
+            icon={<MdBusiness className="h-6 w-6" />}
+            title={"Total Sites"}
+            subtitle={site}
+          />
+        </div>
+        <div
+          className="cursor-pointer"
+          onClick={() => handleWidgetClick("/admin/administrator")}
+        >
+          <Widget
+            icon={<MdPerson className="h-7 w-7" />}
+            title={"Total Account"}
+            subtitle={admin}
+          />
+        </div>
+        <div
+          className="cursor-pointer"
+          onClick={() => handleWidgetClick("/admin/ppp-client")}
+        >
+          <Widget
+            icon={<MdBarChart className="h-6 w-6" />}
+            title={"Total PPP Client"}
+            subtitle={client}
+          />
+        </div>
+        <div
+          className="cursor-pointer"
+          onClick={() => handleWidgetClick("/admin/ppp-client")}
+        >
+          <Widget
+            icon={<MdBarChart className="h-7 w-7" />}
+            title={"Total Enable Client"}
+            subtitle={enable}
+          />
+        </div>
+        <div
+          className="cursor-pointer"
+          onClick={() => handleWidgetClick("/admin/ppp-client")}
+        >
+          <Widget
+            icon={<MdBarChart className="h-6 w-6" />}
+            title={"Total Disable Client"}
+            subtitle={disable}
+          />
+        </div>
       </div>
 
       <div className="mt-5 flex gap-5 ">
