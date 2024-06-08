@@ -1,8 +1,5 @@
-import React, { useState, useEffect } from "react";
-import {
-  MagnifyingGlassIcon,
-  RocketLaunchIcon,
-} from "@heroicons/react/24/outline";
+import React, { useState, useEffect, useContext } from "react";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import {
   UserPlusIcon,
   TrashIcon,
@@ -29,7 +26,8 @@ import { BASE_URL } from "libs/auth-api";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { BeatLoader } from "react-spinners";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { DataContext } from "../../../../utils/DataContext";
 
 const TABLE_HEAD = [
   "No",
@@ -45,25 +43,28 @@ const TABLE_HEAD = [
 export function TablePpp() {
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [openDetail, setOpenDetail] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [length, setLength] = useState("");
 
-  const [itemsPerPage] = useState(5);
   const { data, refetch } = useData();
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState(null);
   const [showPasswordId, setShowPasswordId] = useState(null);
-  const [filterConfiguration, setFilterConfiguration] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
+  const {
+    currentPage,
+    setCurrentPage,
+    itemsPerPage,
+    setItemsPerPage,
+    filterConfiguration,
+    setFilterConfiguration,
+    filterStatus,
+    setFilterStatus,
+    filterSearch,
+    setFilterSearch,
+  } = useContext(DataContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems =
-    filteredUsers.length > 0
-      ? filteredUsers.slice(indexOfFirstItem, indexOfLastItem)
-      : [];
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -120,43 +121,6 @@ export function TablePpp() {
     });
   };
 
-  const handleSearch = (value) => {
-    if (value === "" || value === null) {
-      setFilteredUsers(data);
-    } else {
-      const filtered = data.filter(
-        (user) =>
-          (user &&
-            user.name &&
-            user.name.toLowerCase().includes(value.toLowerCase())) ||
-          (user &&
-            user.profile &&
-            user.profile.toLowerCase().includes(value.toLowerCase())) ||
-          (user &&
-            user.password &&
-            user.password.toLowerCase().includes(value.toLowerCase())) ||
-          (user &&
-            user.service_type &&
-            user.service_type.toLowerCase().includes(value.toLowerCase())) ||
-          (user &&
-            user.ref_id &&
-            user.ref_id.toLowerCase().includes(value.toLowerCase())) ||
-          (user &&
-            user.status &&
-            user.status.toLowerCase().includes(value.toLowerCase())) ||
-          (user &&
-            user.configuration &&
-            user.configuration.toLowerCase().includes(value.toLowerCase())) ||
-          (user &&
-            user.comment &&
-            user.comment.toLowerCase().includes(value.toLowerCase()))
-      );
-      setFilteredUsers(filtered);
-      setLength(filtered.length);
-    }
-    setCurrentPage(1);
-  };
-
   const handleShowPassword = (clientId) => {
     setShowPasswordId(showPasswordId === clientId ? null : clientId);
   };
@@ -165,11 +129,17 @@ export function TablePpp() {
     navigate(`/admin/ppp-client/view-detail/${client_id}`);
   };
 
+  useEffect(() => {
+    setFilterSearch("");
+    setFilterConfiguration("");
+    setFilterStatus("");
+  }, [location]);
+
   //filter konfigurasi dan status
   useEffect(() => {
     if (!dataLoaded) return;
 
-    let filteredData = [...data];
+    let filteredData = [...(data?.data || [])];
 
     if (filterConfiguration !== "") {
       filteredData = filteredData.filter(
@@ -188,22 +158,25 @@ export function TablePpp() {
     }
 
     setFilteredUsers(filteredData);
-    setLength(filteredData.length);
-    setCurrentPage(1);
   }, [filterConfiguration, filterStatus, data, dataLoaded]);
 
   useEffect(() => {
     if (data) {
-      setFilteredUsers(data);
+      setFilteredUsers(data?.data || []);
+      console.log(data.data);
+
       setDataLoaded(true);
-      setLength(data.length);
     }
   }, [data]);
 
   useEffect(() => {
     if (!dataLoaded) return;
-    setFilteredUsers(data);
+    setFilteredUsers(data?.data || []);
   }, [dataLoaded]);
+
+  const handleChangeItemsPerPage = (event) => {
+    setItemsPerPage(Number(event.target.value));
+  };
 
   return (
     <>
@@ -241,7 +214,8 @@ export function TablePpp() {
                 label="Search"
                 placeholder="Search"
                 icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-                onChange={(e) => handleSearch(e.target.value)}
+                value={filterSearch}
+                onChange={(e) => setFilterSearch(e.target.value)}
               />
             </div>
             <div className="flex gap-3">
@@ -292,7 +266,7 @@ export function TablePpp() {
             </thead>
             {dataLoaded ? (
               <tbody>
-                {currentItems.map(
+                {filteredUsers.map(
                   (
                     {
                       client_id,
@@ -308,7 +282,7 @@ export function TablePpp() {
                   ) => {
                     const actualIndex = indexOfFirstItem + index + 1;
                     const classes =
-                      index === currentItems.length - 1
+                      index === filteredUsers.length - 1
                         ? "p-4"
                         : "p-4 border-b border-blue-gray-50";
 
@@ -481,11 +455,23 @@ export function TablePpp() {
           </table>
         </CardBody>
         <CardFooter className="border-blue-gray-50 flex items-center justify-between border-t p-4">
-          <p variant="small" color="blue-gray" className="font-normal">
-            Page {currentPage} of{" "}
-            {Math.ceil(filteredUsers.length / itemsPerPage)} - Total {length}{" "}
-            Items
-          </p>
+          <div className="flex items-center">
+            <p variant="small" color="blue-gray" className="font-normal">
+              Page {data?.current_page} of {data?.pages} - Total {data?.total}{" "}
+              Items
+            </p>
+            <select
+              className="border-blue-gray-50 ml-4 rounded border p-1 dark:bg-navy-700"
+              value={itemsPerPage}
+              onChange={handleChangeItemsPerPage}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
           <div className="flex gap-2">
             <Button
               className="dark:border-white dark:text-white"
@@ -501,9 +487,7 @@ export function TablePpp() {
               variant="outlined"
               size="sm"
               onClick={() => paginate(currentPage + 1)}
-              disabled={
-                currentPage === Math.ceil(filteredUsers.length / itemsPerPage)
-              }
+              disabled={currentPage === data?.pages}
             >
               Next
             </Button>
