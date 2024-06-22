@@ -20,7 +20,7 @@ const ConfigureChartCard = () => {
           },
         };
         const response = await axios.get(`${BASE_URL}/dashboard`, config);
-        console.log(response.data);
+
         setConfigured(response.data.client.configured);
         setUnConfigured(response.data.client.unconfigured);
       } catch (error) {

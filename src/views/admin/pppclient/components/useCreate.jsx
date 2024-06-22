@@ -138,14 +138,11 @@ const useCreate = ({ handleOpen, open }) => {
             id: parseInt(siteId),
           };
 
-          console.log(formData);
-
           const responseData = await axios.post(
             `${BASE_URL}/sites/mikrotik`,
             formData,
             config
           );
-          console.log(responseData);
           if (responseData && responseData.data) {
             setMikrotikOptions(
               responseData.data.map((site) => ({
@@ -170,8 +167,6 @@ const useCreate = ({ handleOpen, open }) => {
   const filteredMikrotikOptions = mikrotikOptions.filter((option) =>
     option.label.toLowerCase().includes(searchInput.toLowerCase())
   );
-
-  console.log(profileOptions);
 
   useEffect(() => {
     const fetchData = async () => {

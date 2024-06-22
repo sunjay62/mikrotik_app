@@ -23,7 +23,7 @@ const ClientChartCard = () => {
           `${BASE_URL}/dashboard/clientconnected`,
           config
         );
-        console.log(response.data);
+        // console.log(response.data);
         setConnected(response.data.connected);
         setDisconnected(response.data.disconnected);
       } catch (error) {

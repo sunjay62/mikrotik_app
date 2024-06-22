@@ -163,7 +163,6 @@ export function TablePpp() {
   useEffect(() => {
     if (data) {
       setFilteredUsers(data?.data || []);
-      console.log(data.data);
 
       setDataLoaded(true);
     }
@@ -487,7 +486,7 @@ export function TablePpp() {
               variant="outlined"
               size="sm"
               onClick={() => paginate(currentPage + 1)}
-              disabled={currentPage === data?.pages}
+              disabled={currentPage === data?.pages || data?.pages === 0}
             >
               Next
             </Button>

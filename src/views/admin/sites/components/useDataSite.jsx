@@ -45,7 +45,6 @@ export const useDataSite = () => {
                     "access_token",
                     refreshResponse.data.access_token
                   );
-                  console.log("Access token refreshed. Refetching data...");
                   refetch();
                 }
               } catch (refreshError) {

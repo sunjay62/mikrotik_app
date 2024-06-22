@@ -65,8 +65,6 @@ const useUpdate = ({ handleOpenEdit, openEdit, selectedClientId }) => {
           config
         );
 
-        console.log(responseData);
-
         setName(responseData.data.name);
         setPassword(responseData.data.password);
         setService(responseData.data.service_type);

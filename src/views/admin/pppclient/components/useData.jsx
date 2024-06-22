@@ -16,12 +16,6 @@ export const useData = () => {
     filterSearch,
   } = useContext(DataContext);
 
-  console.log(currentPage);
-  console.log(itemsPerPage);
-  console.log(filterConfiguration);
-  console.log(filterStatus);
-  console.log(filterSearch);
-
   const fetchData = useCallback(async () => {
     try {
       const accessToken = localStorage.getItem("access_token");

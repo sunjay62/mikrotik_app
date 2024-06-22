@@ -276,7 +276,9 @@ export function TableProfile() {
               size="sm"
               onClick={() => paginate(currentPage + 1)}
               disabled={
-                currentPage === Math.ceil(filteredUsers.length / itemsPerPage)
+                currentPage ===
+                  Math.ceil(filteredUsers.length / itemsPerPage) ||
+                Math.ceil(filteredUsers.length / itemsPerPage) === 0
               }
             >
               Next

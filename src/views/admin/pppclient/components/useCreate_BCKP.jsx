@@ -156,8 +156,6 @@ const useCreate = ({ handleOpen, open }) => {
     option.label.toLowerCase().includes(searchInput.toLowerCase())
   );
 
-  console.log(profileOptions);
-
   return (
     <Modal
       open={open}

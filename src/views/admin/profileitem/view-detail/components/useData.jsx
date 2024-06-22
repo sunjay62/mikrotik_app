@@ -29,8 +29,6 @@ export const useData = (nameSecret) => {
           config
         );
 
-        console.log(responseData);
-
         return responseData.data.data;
       } catch (error) {
         console.log(error);
